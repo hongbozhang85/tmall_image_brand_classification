@@ -16,19 +16,11 @@ import gc
 import alexnet
 import dataloader
 import learncurve
+import postprocess
 
 
-def getAccuracy(output, val_y, top):
-    '''
-    output: Variable type. net(val_x). output of validation set.
-    val_y: LongTensor type. the target of validation set. 
-    top: if it equals to k, top k accuracy
-    '''
-    pred = torch.topk(output, top)[1]
-    accuracy = sum([val_y.cpu().numpy()[i] in pred.data.cpu().numpy()[i] for i in range(val_y.size(0))]) / val_y.size(0)
-    return accuracy
 
-print("HELLO!")
+print("HELLO! TRAINING FROM SCRATCH")
 
 # hyper parameter
 BATCHSIZE = 20  # mini batch size
@@ -43,13 +35,14 @@ SZ = 224        # input img size
 
 # training set: preprocess and load. 70% of whole training data
 start = time.time()
-dataTensor, targetTensor = dataloader.loadTrainData(0.3, 224)
+dataTensor, targetTensor = dataloader.loadTrainData(0.7, 224)
 # dataTensor, targetTensor = loadTrainData(0.7, 224)
 # dataTensor, targetTensor = traindata[0], traindata[1]
 end = time.time()
 print("training data has been loaded in %d seconds"%(end-start))
 
-# validation set: 30% of whole training data
+# validation set: 3% of whole training data
+# only use for monitor learning curve
 start = time.time()
 valx, valy = dataloader.loadValidationData(0.03, 224)
 end = time.time()
@@ -106,7 +99,7 @@ for epoch in range(EPOCH):
             val_output = alex(valx)
             # top 1 accuracy
             pred_y1 = torch.max(val_output, 1)[1].data.squeeze()
-            accuracy1 = sum(pred_y1 == valy).numpy() / valy.size(0)
+            accuracy1 = torch.sum(pred_y1 == valy).numpy() / valy.size(0)
             # top 5 accuracy. useless at present, only 3 categories
             # pred_y5 = torch.topk(val_output, 5)[1]
             # accuracy5 = sum([val_y.cpu().numpy()[i] in pred_y5.data.cpu().numpy()[i] for i in range(val_y.size(0))]) / val_y.size(0)
@@ -133,6 +126,7 @@ torch.save(alex, 'tmall_brand_classifier.pkl')
 learncurve.learningCurve(lossarray, accuracy1array, window = 5)
 
 # final accuray
+# final top 1
 alex.eval()
 alex.cpu()
 
@@ -141,12 +135,9 @@ del targetTensor
 del loader
 gc.collect()
 
-val_output = alex(valx)
+valxFile, valy = dataloader.loadValidationDataFileName(percentage = 0.3)
+postprocess.makePredictionCPU(alex, valxFile, valy, SZ)
 
-# final top 1
-pred_y1 = torch.max(val_output, 1)[1].data.squeeze()
-accuracy1 = sum(pred_y1 == valy).numpy() / valy.size(0)
-print('TOP 1 val accuracy: ', accuracy1)
 # final top 5
 # pred_y5 = torch.topk(val_output, 5)[1]
 # accuracy5 = sum([val_y.numpy()[i] in pred_y5.data.numpy()[i] for i in range(val_y.size(0))]) / val_y.size(0)

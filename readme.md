@@ -71,11 +71,90 @@ build the whole architecture of the classifier, and test the code.
 
 ### 18 Sep 05
 
-10. 18-sep-05-exp01. increase size of training set
+1. 18-sep-05-exp01. increase size of training set. out of cpu memory in calulating `alexnet(valx)`
 	+ alexnet, with BN, LRN and drop out
 	+ BATCHSIZE=20 EPOCH=20 LR=0.001 WD=1e-6 ISGPU=True NH=128 DP=0.5 SZ=224      
 	+ no data augmentation and no noise embedding
 	+ training set: first 70% of tmall pic
+	+ validation set: last 30% of tmall pic
+	+ on T470p gpu
+2. 18-sep-05-exp02. reduce size of validation set to 10% to save cpu memory. get killed, don't know why
+	+ alexnet, with BN, LRN and drop out
+	+ BATCHSIZE=20 EPOCH=20 LR=0.001 WD=1e-6 ISGPU=True NH=128 DP=0.5 SZ=224      
+	+ no data augmentation and no noise embedding
+	+ training set: first 70% of tmall pic
+	+ validation set: last 10% of tmall pic
+	+ on T470p gpu
+3. 18-sep-05-exp03. reduce size of validation set further to 3% to save cpu memory.
+	+ alexnet, with BN, LRN and drop out
+	+ BATCHSIZE=20 EPOCH=20 LR=0.001 WD=1e-6 ISGPU=True NH=128 DP=0.5 SZ=224      
+	+ BATCHSIZE=20, gpu memory (2G in total) usage 60%. PCI bandwidth utilization < 60%
+	+ no data augmentation and no noise embedding
+	+ training set: first 70% of tmall pic
 	+ validation set: last 3% of tmall pic
 	+ on T470p gpu
-	+ s, %. result in ***result//***
+	+ 1890s, 88.4%. result in ***result/18090503/***
+4. 18-sep-05-exp04. 90.8%. testing function makePrediction, 0 EPOCH.
+	+ reading model of 18-sep-05-exp03, full validation set (30%). accuracy: 90.8%
+	+ alexnet, with BN, LRN and drop out
+	+ BATCHSIZE=20 EPOCH=0 LR=0.001 WD=1e-6 ISGPU=True NH=128 DP=0.5 SZ=224      
+	+ no data augmentation and no noise embedding
+	+ training set: first 70% of tmall pic
+	+ validation set in learning curve: last 3% of tmall pic
+	+ validation set: last 30% of tmall pic
+	+ on T470p gpu
+	```
+	100 
+	torch.Size([100, 3, 224, 224]) 
+	TOP 1 val accuracy of this batch:  0.88 
+	100 
+	torch.Size([100, 3, 224, 224]) 
+	TOP 1 val accuracy of this batch:  0.94 
+	100 
+	torch.Size([100, 3, 224, 224]) 
+	TOP 1 val accuracy of this batch:  0.9
+	100
+	torch.Size([100, 3, 224, 224])
+	TOP 1 val accuracy of this batch:  0.95
+	100
+	torch.Size([100, 3, 224, 224])
+	TOP 1 val accuracy of this batch:  0.97
+	100
+	torch.Size([100, 3, 224, 224])
+	TOP 1 val accuracy of this batch:  0.99
+	100
+	torch.Size([100, 3, 224, 224])
+	TOP 1 val accuracy of this batch:  0.95
+	100
+	torch.Size([100, 3, 224, 224])
+	TOP 1 val accuracy of this batch:  0.95
+	100
+	torch.Size([100, 3, 224, 224])
+	TOP 1 val accuracy of this batch:  0.96
+	100
+	torch.Size([100, 3, 224, 224])
+	TOP 1 val accuracy of this batch:  0.79
+	accuracy is too low, printing image list in this batch
+	100
+	torch.Size([100, 3, 224, 224])
+	TOP 1 val accuracy of this batch:  0.78
+	accuracy is too low, printing image list in this batch
+	28
+	torch.Size([28, 3, 224, 224])
+	TOP 1 val accuracy of this batch:  0.6785714285714286
+	accuracy is too low, printing image list in this batch
+	```
+5. 18-sep-05-exp05. training from breakpoint for another 20 epoches.
+	+ reading model of 18-sep-05-exp03, full validation set (30%). accuracy:
+	+ alexnet, with BN, LRN and drop out
+	+ BATCHSIZE=20 EPOCH=20 LR=0.001 WD=1e-6 ISGPU=True NH=128 DP=0.5 SZ=224      
+	+ no data augmentation and no noise embedding
+	+ training set: first 70% of tmall pic
+	+ validation set in learning curve: last 3% of tmall pic
+	+ validation set: last 30% of tmall pic
+	+ on T470p gpu
+
+
+
+
+
