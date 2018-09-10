@@ -1,8 +1,10 @@
 json/
 taobao_pic/
 tmall_pic/
+garbage_pic/
 train/
 taobao_pic.tar
 tmall_pic.tar
+new_pic.tar
 tmall_json.tar.gz
 

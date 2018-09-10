@@ -144,8 +144,8 @@ build the whole architecture of the classifier, and test the code.
 	TOP 1 val accuracy of this batch:  0.6785714285714286
 	accuracy is too low, printing image list in this batch
 	```
-5. 18-sep-05-exp05. training from breakpoint for another 20 epoches.
-	+ reading model of 18-sep-05-exp03, full validation set (30%). accuracy:
+5. 18-sep-05-exp05. training from breakpoint for another 20 epoches. accuracy is still 90.8%, additional 20 epoches training doesn't increase the model performance. BATCHSIZE is too small, hence the learning curve fluctuates too much. As a result, it is too hard to tell whether it is converged or has overfitting. But BATCHSIZE is limited by ~~~30~~~ due to the gpu memory.
+	+ reading model of 18-sep-05-exp03, full validation set (30%). accuracy: 90.8%
 	+ alexnet, with BN, LRN and drop out
 	+ BATCHSIZE=20 EPOCH=20 LR=0.001 WD=1e-6 ISGPU=True NH=128 DP=0.5 SZ=224      
 	+ no data augmentation and no noise embedding
@@ -153,8 +153,55 @@ build the whole architecture of the classifier, and test the code.
 	+ validation set in learning curve: last 3% of tmall pic
 	+ validation set: last 30% of tmall pic
 	+ on T470p gpu
+	+ 2088s, 90.8%. result in ***result/18090505/***
+6. 18-sep-05-exp06. increase BATCHSIZE to 30. 
+	+ gpu memory usage 74%. since BATCHSIZE=20, gpu mem usage is 60%, so BATCHSIZE should reach 50.
+	+ alexnet, with BN, LRN and drop out
+	+ BATCHSIZE=30 EPOCH=20 LR=0.001 WD=1e-6 ISGPU=True NH=128 DP=0.5 SZ=224      
+	+ no data augmentation and no noise embedding
+	+ training set: first 70% of tmall pic
+	+ validation set in learning curve: last 3% of tmall pic
+	+ validation set: last 30% of tmall pic
+	+ on T470p gpu
+	+ 1264s, 89.7%. result in ***result/18090506/***
+
+TODO: BATCHSIZE = 50    
+
+TODO: breakpoint from 18-sep-05-exp06 for additional epoches
+
+### 18 Sep 07
 
 
+1. 18-sep-07-exp01. 4 categories in total, add a new one ***other***. only 72.3%, xiaomi's accuracy is lowest. possibly due to xiaomi's product is so diversed. Furthermore, the learning curve oscillates all the time and has large amplitude. we should decrease LR and increase BATCHSIZE.
+	+ alexnet, with BN, LRN and drop out
+	+ BATCHSIZE=20 EPOCH=20 LR=0.001 WD=1e-6 ISGPU=True NH=128 DP=0.5 SZ=224      
+	+ no data augmentation and no noise embedding
+	+ training set: first 70% of tmall pic + garbage pic
+	+ validation set in learning curve: last 2% of tmall pic + garbage pic
+	+ validation set: last 30% of tmall pic + garbage pic
+	+ on T470p gpu
+	+ 2846s, 72.3%. result in ***result/18090701/***
+2. 18-sep-07-exp02. continue from 18-sep-07-exp01, increase BATCHSIZE, reduce LR. 84.7%. "other"'s accuracy is lowest.
+	+ cpu memory is only enough to calculate 2% tmall + garbage pic as validation set in learning curve.
+	+ breakpoint from 18-sep-07-exp01
+	+ alexnet, with BN, LRN and drop out
+	+ BATCHSIZE=50 EPOCH=20 LR=0.0003 WD=1e-6 ISGPU=True NH=128 DP=0.5 SZ=224      
+	+ no data augmentation and no noise embedding
+	+ training set: first 70% of tmall pic + garbage pic
+	+ validation set in learning curve: last 2% of tmall pic + garbage pic
+	+ validation set: last 30% of tmall pic + garbage pic
+	+ on T470p gpu
+	+ 1855s, 84.7%. result in ***result/18090702/***
+3. 18-sep-07-exp03. continue from 18-sep-07-exp02. 86.3% (60 epoches when take account exp02 and exp01)
+	+ breakpoint from 18-sep-07-exp02
+	+ gpu memory 93%.
+	+ alexnet, with BN, LRN and drop out
+	+ BATCHSIZE=50 EPOCH=20 LR=0.0003 WD=1e-6 ISGPU=True NH=128 DP=0.5 SZ=224      
+	+ no data augmentation and no noise embedding
+	+ training set: first 70% of tmall pic + garbage pic
+	+ validation set in learning curve: last 2% of tmall pic + garbage pic
+	+ validation set: last 30% of tmall pic + garbage pic
+	+ on T470p gpu
+	+ 2244s, 86.3%. result in ***result/18090703/***
 
-
-
+smaller LR, e.g., LR = 0.0001
